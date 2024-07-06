@@ -21,7 +21,9 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 logger = logging.getLogger(__name__)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-NUM_DEVICE = 2
+NUM_DEVICE = 10
+
+
 def evaluate_model(model, test_loader, criterion):
     model.eval()
     test_loss = 0
@@ -36,7 +38,32 @@ def evaluate_model(model, test_loader, criterion):
     test_loss /= len(test_loader.dataset)
     accuracy = 100. * correct / len(test_loader.dataset)
     return test_loss, accuracy
+def do_evaluate_round():
+    learning_rate = 0.001
+    rounds = 50  # Số vòng lặp đánh giá mô hình
+    model_path = "saved_model/CifarModel.pt"
+    round_dict = {}
 
+    train_loader, test_loader, _, train_dataset = get_cifar10()
+    dict_users = cifar10_noniid_lt(train_dataset, NUM_DEVICE)
+    
+    model = CNNCifar().to(device)
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    criterion = torch.nn.CrossEntropyLoss()
+
+    # Tải mô hình đã lưu
+    checkpoint = torch.load(model_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
+    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+
+    for rnd in range(1, rounds + 1):
+        test_loss, accuracy = evaluate_model(model, test_loader, criterion)
+        logger.info(f'Round: {rnd}, Test Loss: {test_loss:.4f}, Accuracy: {accuracy:.3f}%')
+
+        round_dict[f"round_{rnd}"] = {"eval_loss": test_loss, "accuracy": accuracy}
+
+    return round_dict
+"""
 def do_evaluate_round():
     learning_rate = 0.001
     rounds = 3  # Số vòng lặp đánh giá mô hình
@@ -45,7 +72,7 @@ def do_evaluate_round():
 
     train_loader, test_loader, _, train_dataset = get_cifar10()
     dict_users = cifar10_noniid_lt(train_dataset, NUM_DEVICE)
-    user_data_loaders = get_data_loaders(train_dataset, dict_users)
+    #user_data_loaders = get_data_loaders(train_dataset, dict_users)
     
     model = CNNCifar().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
@@ -65,7 +92,7 @@ def do_evaluate_round():
 
         # Training logic ở đây (nếu cần thiết) cho mỗi vòng
         model.train()
-        for user_loader in user_data_loaders:
+        for user_loader in test_loader:
             for batch_idx, (data, target) in enumerate(user_loader):
                 data, target = data.to(device), target.to(device)
                 output, protos = model(data)
@@ -74,10 +101,10 @@ def do_evaluate_round():
                 loss.backward()
                 optimizer.step()
 
-    return round_dict
+    return round_dict """
 
 if __name__ == "__main__":
-    NUM_ROUNDS = 3
+    NUM_ROUNDS = 50
     ROUND_DICT = do_evaluate_round()
 
     # Extract accuracy and avg_loss values from round_dict

@@ -21,7 +21,7 @@ from collections import OrderedDict
 from tqdm import tqdm 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-learning_rate = 0.0001
+learning_rate = 0.001
 epochs = 1
 NUM_DEVICE = 10
 n_list = [40] * NUM_DEVICE    # Số lượng mẫu mỗi người dùng
@@ -122,7 +122,7 @@ class CNNCifar(nn.Module):
 def tensor_to_list(tensor):
     return tensor.detach().cpu().tolist()
 
-def train_cifar10_noniid(epochs, user_data_loaders, test_loader, learning_rate=0.0001):
+def train_cifar10_noniid(epochs, user_data_loaders, test_loader, learning_rate=0.001):
     model = CNNCifar().to(device)
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = torch.nn.CrossEntropyLoss()
