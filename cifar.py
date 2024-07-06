@@ -166,7 +166,7 @@ def train_cifar10_noniid(epochs, user_data_loaders, test_loader, learning_rate=0
         'loss': test_loss,
         'accuracy': accuracy,
         'prototypes': prototypes
-    }, "saved_model/LSTMModel.pt")
+    }, "saved_model/CifarModel.pt")
     # Normalize prototypes 
     for label in prototypes:
         protos, count = prototypes[label]

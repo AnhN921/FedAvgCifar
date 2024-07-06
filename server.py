@@ -78,7 +78,7 @@ def handle_ping_res(this_client_id, msg):
             count_eva_conn_ok = sum(1 for client_info in client_dict.values() if client_info["state"] == "eva_conn_ok")
             if count_eva_conn_ok == NUM_DEVICE:
                 print_log("publish to " + "dynamicFL/model/all_client")
-                send_model("saved_model/LSTMModel.pt", server, this_client_id)
+                send_model("saved_model/CifarModel", server, this_client_id)
 
 
 def handle_train_res(this_client_id, msg):
