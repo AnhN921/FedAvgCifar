@@ -22,7 +22,7 @@ from tqdm import tqdm
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 learning_rate = 0.0001
-epochs = 20
+epochs = 1
 NUM_DEVICE = 10
 n_list = [40] * NUM_DEVICE    # Số lượng mẫu mỗi người dùng
 k_list = [40] * NUM_DEVICE  # Số lượng mẫu mỗi lớp cho mỗi người dùng
